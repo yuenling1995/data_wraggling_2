@@ -111,6 +111,18 @@ nyc_water_json =
 ```
 
 
+## Get some brfss data - same process, different data
+
+```{r}
+#set up the query perimeter to get all the brfss data
+#example -   GET("http://google.com/", path = "search", query = list(q = "ham"))
+brfss_2010 = 
+  GET("https://chronicdata.cdc.gov/resource/acme-vg9e.csv",
+      query = list("$limit" = 150000)) %>% 
+  content("parsed")
+
+```
+
 
 
 

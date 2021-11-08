@@ -92,3 +92,26 @@ nyc_water_json =
   jsonlite::fromJSON() %>% 
   as_tibble()
 ```
+
+## Get some brfss data - same process, different data
+
+``` r
+#set up the query perimeter to get all the brfss data
+#example -   GET("http://google.com/", path = "search", query = list(q = "ham"))
+brfss_2010 = 
+  GET("https://chronicdata.cdc.gov/resource/acme-vg9e.csv",
+      query = list("$limit" = 150000)) %>% 
+  content("parsed")
+```
+
+    ## Rows: 134203 Columns: 23
+
+    ## ── Column specification ────────────────────────────────────────────────────────
+    ## Delimiter: ","
+    ## chr (16): locationabbr, locationdesc, class, topic, question, response, data...
+    ## dbl  (6): year, sample_size, data_value, confidence_limit_low, confidence_li...
+    ## lgl  (1): locationid
+
+    ## 
+    ## ℹ Use `spec()` to retrieve the full column specification for this data.
+    ## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
