@@ -147,4 +147,54 @@ as.numeric(factor_vec)
 #male = 1, female = 2
 ```
 
-## NSDUH
+## NSDUH – strings
+
+``` r
+url = "http://samhda.s3-us-gov-west-1.amazonaws.com/s3fs-public/field-uploads/2k15StateFiles/NSDUHsaeShortTermCHG2015.htm"
+
+drug_use_html = read_html(url)
+
+tb_marj = 
+  drug_use_html %>% 
+  html_nodes(css = "table") %>% 
+  first() %>% 
+  html_table() %>% 
+  slice(-1) %>% 
+  as_tibble()
+```
+
+``` r
+data_marj = 
+  tb_marj %>% 
+  select(-contains("P Value")) %>% 
+  pivot_longer(
+    -State,
+    names_to = "age_year",
+    values_to = "percent"
+  ) %>% 
+  #because ( is a special character, we need two \\
+  separate(age_year, into = c("age", "year"), sep = "\\(") %>% 
+  mutate(
+    #replace the ) with nothing
+    year = str_replace(year, "\\)", ""),
+    #remove letters that ends with: a,b,c 
+    percent = str_replace(percent, "[a-c]$", ""),
+    percent = as.numeric(percent)
+  ) %>% 
+  filter(!State %in% c("Total U.S.", "Northeast", "Midwest", "South", "West"))
+```
+
+## NSDUH – factors
+
+``` r
+data_marj %>% 
+  filter(age == "12-17") %>% 
+  #put state in order according to percent
+  #so the plot would look nicer
+  mutate(State = fct_reorder(State, percent)) %>% 
+  ggplot(aes(x = State, y = percent, color = year)) +
+  geom_point() +
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust =1))
+```
+
+<img src="strings_and_factors_files/figure-gfm/unnamed-chunk-11-1.png" width="90%" />
